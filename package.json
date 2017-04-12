@@ -1,0 +1,36 @@
+{
+  "name": "zip-unzip-promise",
+  "version": "1.0.0",
+  "description": "ZIP圧縮展開",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm update && cd ./test && node index.js"
+  },
+  "author": "honeo",
+  "license": "MIT",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "archiver": "^1.3.0",
+    "console-wrapper": "^1.1.0",
+    "promise-fs": "^1.2.3",
+    "unzip2": "^0.2.5"
+  },
+  "devDependencies": {
+    "@honeo/test": "^2.1.0"
+  },
+  "keywords": [
+    "zip",
+    "unzip",
+    "promise"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/honeo/zip-unzip-promise.git"
+  },
+  "bugs": {
+    "url": "https://github.com/honeo/zip-unzip-promise/issues"
+  },
+  "homepage": "https://github.com/honeo/zip-unzip-promise#readme"
+}
