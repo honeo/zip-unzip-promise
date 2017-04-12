@@ -34,8 +34,8 @@ const archiver_zip_op = {
 		返り値
 			promise
 */
-Mod.zip = function(_inputPathArr, _outputPath){
-	console.log('.zip()', _inputPathArr, _outputPath);
+Mod.zip = function(_inputPathArr, _outputZipPath){
+	console.log('.zip()', _inputPathArr, _outputZipPath);
 	// 絶対パス化、また配列でなければ配列化する。
 	const inputPathArr = Array.isArray(_inputPathArr) ?
 	 	_inputPathArr.map( (pathStr)=>{
@@ -49,9 +49,9 @@ Mod.zip = function(_inputPathArr, _outputPath){
 		});
 	})
 	// 出力先ファイル名。引数2があれば絶対パス化、なければ ./{最初のfile(拡張子を除く)/dirname}.zip にする
-	const outputPath = (function(){
-		if( typeof outputZipPath==='string' ){
-			return path.resolve(outputZipPath);
+	const outputZipPath = (function(){
+		if( typeof _outputZipPath==='string' ){
+			return path.resolve(_outputZipPath);
 		}else{
 			const {name} = path.parse(inputPathArr[0]);
 			return path.resolve(`./${name}.zip`);
@@ -60,9 +60,10 @@ Mod.zip = function(_inputPathArr, _outputPath){
 	return Promise.all(promiseArr).then( (objArr)=>{
 		// 引数2があればそのまま、なければ作る
 		const archive = new Archiver('zip', archiver_zip_op);
-		const stream_write = fs.createWriteStream(outputPath);
+		console.log('###########', outputZipPath);
+		const stream_write = fs.createWriteStream(outputZipPath);
 		return new Promise( (resolve, reject)=>{
-			const resolve_bind = resolve.bind(undefined, outputPath);
+			const resolve_bind = resolve.bind(undefined, outputZipPath);
 			archive.on('close', resolve_bind);
 			archive.on('end', resolve_bind);
 			archive.on('finish', resolve_bind);

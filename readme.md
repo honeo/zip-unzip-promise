@@ -19,6 +19,9 @@ const {zip, unzip} = require('zip-unzip-promise');
 引数1パスのファイル・ディレクトリまたはその配列を圧縮する。  
 圧縮後ファイルのパスを引数に解決するpromiseを返す。
 ```js
+// hoge.txt => hoge.zip
+const zippath = await zip('hoge.txt');
+
 // foobar => foobar.zip
 const zipPath = await zip('./foobar');
 

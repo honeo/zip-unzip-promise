@@ -6,7 +6,7 @@ console.log(`${name} v${version}: test`);
 
 // Modules
 const {zip, unzip, debug} = require('../');
-debug(true);
+//debug(true);
 const fsp = require('fs-promise');
 const Test = require('@honeo/test');
 
@@ -32,19 +32,27 @@ Test([
 	// zip
 	function(){
 		console.log('zip(filepath)');
-		return zip('./hoge.txt').then(fsp.exists);
+		return zip('./hoge.txt').then( (zipPath)=>{
+			return fsp.exists('./hoge.zip');
+		});
 	},
 	function(){
 		console.log('zip(filepath, zipPath)');
-		return zip('./hoge.txt', './hogege.zip').then(fsp.exists);
+		return zip('./hoge.txt', './hogege.zip').then( (zipPath)=>{
+			return fsp.exists('./hogege.zip');
+		});
 	},
 	function(){
 		console.log('zip(dirpath)');
-		return zip('./').then(fsp.exists);
+		return zip('./').then( (zipPath)=>{
+			return fsp.exists('./temp.zip');
+		});
 	},
 	function(){
 		console.log('zip(dirpath, zipPath)');
-		return zip('./', './tempp.zip').then(fsp.exists);
+		return zip('./', './temppp.zip').then( ()=>{
+			return fsp.exists('./temppp.zip');
+		});
 	},
 	function(){
 		console.log('zip([filepath, dirpath], outputPath)');
