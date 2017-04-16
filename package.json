@@ -12,13 +12,15 @@
     "test": "test"
   },
   "dependencies": {
+    "@honeo/check": "^1.0.2",
     "archiver": "^1.3.0",
     "console-wrapper": "^1.1.0",
     "promise-fs": "^1.2.3",
     "unzip2": "^0.2.5"
   },
   "devDependencies": {
-    "@honeo/test": "^2.1.0"
+    "@honeo/test": "^2.1.0",
+    "ospath": "^1.2.2"
   },
   "keywords": [
     "zip",

@@ -8,9 +8,11 @@ const fs = require('fs');
 const fsp = require('fs-promise')
 const path = require('path');
 const unzip2 = require('unzip2');
+const {is, not, any} = require('@honeo/check');
 const console = require('console-wrapper');
 
 // Var
+const ModName = 'zip-unzip-promise';
 const Mod = {
 	debug(bool){
 		bool ?
@@ -34,10 +36,10 @@ const archiver_zip_op = {
 		返り値
 			promise
 */
-Mod.zip = function(_inputPathArr, _outputZipPath){
-	console.log('.zip()', _inputPathArr, _outputZipPath);
+Mod.zip = async function(_inputPathArr, _outputZipPath){
+	console.log(`${ModName}.zip()`, _inputPathArr, _outputZipPath);
 	// 絶対パス化、また配列でなければ配列化する。
-	const inputPathArr = Array.isArray(_inputPathArr) ?
+	const inputPathArr = is.arr(_inputPathArr) ?
 	 	_inputPathArr.map( (pathStr)=>{
 			return path.resolve(pathStr);
 		}):
@@ -50,32 +52,30 @@ Mod.zip = function(_inputPathArr, _outputZipPath){
 	})
 	// 出力先ファイル名。引数2があれば絶対パス化、なければ ./{最初のfile(拡張子を除く)/dirname}.zip にする
 	const outputZipPath = (function(){
-		if( typeof _outputZipPath==='string' ){
+		if( is.str(_outputZipPath) ){
 			return path.resolve(_outputZipPath);
 		}else{
 			const {name} = path.parse(inputPathArr[0]);
 			return path.resolve(`./${name}.zip`);
 		}
 	}());
-	return Promise.all(promiseArr).then( (objArr)=>{
-		// 引数2があればそのまま、なければ作る
-		const archive = new Archiver('zip', archiver_zip_op);
-		console.log('###########', outputZipPath);
-		const stream_write = fs.createWriteStream(outputZipPath);
-		return new Promise( (resolve, reject)=>{
-			const resolve_bind = resolve.bind(undefined, outputZipPath);
-			archive.on('close', resolve_bind);
-			archive.on('end', resolve_bind);
-			archive.on('finish', resolve_bind);
-			archive.on('error', reject);
-			archive.pipe(stream_write);
-			objArr.forEach( (obj)=>{
-				obj.stat.isFile() ?
-					archive.file(obj.path, {name: path.basename(obj.path)}):
-					archive.directory(obj.path, path.basename(obj.path));
-			});
-			archive.finalize();
+	const objArr = await Promise.all(promiseArr);
+	// 引数2があればそのまま、なければ作る
+	const archive = new Archiver('zip', archiver_zip_op);
+	const stream_write = fs.createWriteStream(outputZipPath);
+	return new Promise( (resolve, reject)=>{
+		const resolve_bind = resolve.bind(undefined, outputZipPath);
+		archive.on('close', resolve_bind);
+		archive.on('end', resolve_bind);
+		archive.on('finish', resolve_bind);
+		archive.on('error', reject);
+		archive.pipe(stream_write);
+		objArr.forEach( (obj)=>{
+			obj.stat.isFile() ?
+				archive.file(obj.path, {name: path.basename(obj.path)}):
+				archive.directory(obj.path, path.basename(obj.path));
 		});
+		archive.finalize();
 	});
 }
 
@@ -84,7 +84,7 @@ Mod.zip = function(_inputPathArr, _outputZipPath){
 		promiseを返す
 */
 Mod.unzip = function(inputZipPath, outputDirPath='./'){
-	console.log('.unzip()', `input: ${inputZipPath}`, `output: ${outputDirPath}`);
+	console.log(`${ModName}.unzip()`, `input: ${inputZipPath}`, `output: ${outputDirPath}`);
 	return new Promise( (resolve, reject)=>{
 		const stream_read = fs.createReadStream(inputZipPath);
 		const stream_unzip = unzip2.Extract({

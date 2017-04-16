@@ -7,12 +7,16 @@ console.log(`${name} v${version}: test`);
 // Modules
 const {zip, unzip, debug} = require('../');
 //debug(true);
+const {is, not, any} = require('@honeo/check');
+const fs = require('fs');
 const fsp = require('fs-promise');
+const ospath = require('ospath');
+const path = require('path');
 const Test = require('@honeo/test');
 
 // Var
 const option = {
-	cd: './temp',
+	cd: path.join(ospath.tmp(), 'temp-zip-nzip-promise'),
 	exit: true,
 	init(){
 		// ./foo/bar/foobar.txt, ./hoge.txt を作成する。
@@ -30,22 +34,23 @@ const option = {
 // Main
 Test([
 	// zip
-	function(){
+	async function(){
 		console.log('zip(filepath)');
-		return zip('./hoge.txt').then( (zipPath)=>{
-			return fsp.exists('./hoge.zip');
-		});
+		const zipPath = await zip('./hoge.txt');
+		return fs.existsSync('./hoge.zip');
 	},
-	function(){
+	async function(){
 		console.log('zip(filepath, zipPath)');
-		return zip('./hoge.txt', './hogege.zip').then( (zipPath)=>{
-			return fsp.exists('./hogege.zip');
-		});
+		const zipPath = await zip('./hoge.txt', './hogege.zip');
+		return is.true(
+			is.str(zipPath),
+			fsp.existsSync('./hogege.zip')
+		);
 	},
 	function(){
 		console.log('zip(dirpath)');
-		return zip('./').then( (zipPath)=>{
-			return fsp.exists('./temp.zip');
+		return zip('foo').then( (zipPath)=>{
+			return fsp.exists('foo.zip');
 		});
 	},
 	function(){
@@ -59,7 +64,9 @@ Test([
 		return zip([
 			'./hoge.txt',
 			'./foo'
-		], './bar.zip').then(fsp.exists);
+		], './bar.zip').then( (zipPath)=>{
+			return fsp.exists('./bar.zip');
+		});
 	},
 
 	// unzip
