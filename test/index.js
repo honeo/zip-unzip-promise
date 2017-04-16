@@ -37,62 +37,73 @@ Test([
 	async function(){
 		console.log('zip(filepath)');
 		const zipPath = await zip('./hoge.txt');
-		return fs.existsSync('./hoge.zip');
+		return is.true(
+			is.str(zipPath),
+			fs.existsSync('./hoge.zip')
+		);
 	},
 	async function(){
 		console.log('zip(filepath, zipPath)');
 		const zipPath = await zip('./hoge.txt', './hogege.zip');
 		return is.true(
 			is.str(zipPath),
-			fsp.existsSync('./hogege.zip')
+			fs.existsSync('./hogege.zip')
 		);
 	},
-	function(){
+	async function(){
 		console.log('zip(dirpath)');
-		return zip('foo').then( (zipPath)=>{
-			return fsp.exists('foo.zip');
-		});
+		const zipPath = await zip('foo');
+		return is.true(
+			is.str(zipPath),
+			fs.existsSync('foo.zip')
+		);
 	},
-	function(){
+	async function(){
 		console.log('zip(dirpath, zipPath)');
-		return zip('./', './temppp.zip').then( ()=>{
-			return fsp.exists('./temppp.zip');
-		});
+		const zipPath = await zip('./', './temppp.zip');
+		return is.true(
+			is.str('zipPath'),
+			fs.existsSync('./temppp.zip')
+		);
 	},
-	function(){
+	async function(){
 		console.log('zip([filepath, dirpath], outputPath)');
-		return zip([
+		const zipPath = await zip([
 			'./hoge.txt',
 			'./foo'
-		], './bar.zip').then( (zipPath)=>{
-			return fsp.exists('./bar.zip');
-		});
+		], './bar.zip');
+		return is.true(
+			is.str(zipPath),
+			fs.existsSync('./bar.zip')
+		);
 	},
 
 	// unzip
-	function(){
+	async function(){
 		console.log('unzip(fileZipPath)');
-		return zip('./foo/bar/foobar.txt').then(unzip).then( (path)=>{
-			return fsp.exists('./foobar.txt');
-		});
+		const zipPath = await zip('./foo/bar/foobar.txt');
+		const dirPath = await unzip(zipPath);
+		return is.true(
+			fs.existsSync('./foobar.txt'),
+			is.str(dirPath)
+		);
 	},
-	function(){
+	async function(){
 		console.log('unzip(dirZipPath)');
-		return zip('./foo/bar').then(unzip).then( (path)=>{
-			return fsp.exists('./bar');
-		});
+		const zipPath = await zip('./foo/bar');
+		const dirPath = await unzip(zipPath);
+		return is.true(
+			is.str(dirPath),
+			fs.existsSync('./bar')
+		);
 	},
-	function(){
+	async function(){
 		console.log('unzip(file&dirZipPath, outputDir)');
-		return zip(['./foo', './hoge.txt']).then( (path)=>{
-			return unzip(path, 'output');
-		}).then( (path)=>{
-			return Promise.all([
-				fsp.exists('./output/foo'),
-				fsp.exists('./output/hoge.txt')
-			]);
-		}).then( (arr)=>{
-			return arr.every( (bool)=>{return bool===true;});
-		});
+		const zipPath = await zip(['./foo', './hoge.txt']);
+		const dirPath = await unzip(zipPath, 'output');
+		return is.true(
+			fs.existsSync('./output/foo'),
+			fs.existsSync('./output/hoge.txt')
+		);
 	},
 ], option);
