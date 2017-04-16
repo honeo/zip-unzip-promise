@@ -35,6 +35,7 @@ const archiver_zip_op = {
 			last: op, 出力する圧縮ファイルのパス
 		返り値
 			promise
+				出力した.zipファイルのパスを引数に解決する。
 */
 Mod.zip = async function(_inputPathArr, _outputZipPath){
 	console.log(`${ModName}.zip()`, _inputPathArr, _outputZipPath);
@@ -44,12 +45,6 @@ Mod.zip = async function(_inputPathArr, _outputZipPath){
 			return path.resolve(pathStr);
 		}):
 		[path.resolve(_inputPathArr)];
-	// stat解決待ちのpromise化
-	const promiseArr = inputPathArr.map( (pathStr)=>{
-		return fsp.stat(pathStr).then( (stat)=>{
-			return {stat, path: pathStr};
-		});
-	})
 	// 出力先ファイル名。引数2があれば絶対パス化、なければ ./{最初のfile(拡張子を除く)/dirname}.zip にする
 	const outputZipPath = (function(){
 		if( is.str(_outputZipPath) ){
@@ -59,24 +54,43 @@ Mod.zip = async function(_inputPathArr, _outputZipPath){
 			return path.resolve(`./${name}.zip`);
 		}
 	}());
-	const objArr = await Promise.all(promiseArr);
-	// 引数2があればそのまま、なければ作る
+	// zipインスタンス
 	const archive = new Archiver('zip', archiver_zip_op);
-	const stream_write = fs.createWriteStream(outputZipPath);
-	return new Promise( (resolve, reject)=>{
-		const resolve_bind = resolve.bind(undefined, outputZipPath);
-		archive.on('close', resolve_bind);
-		archive.on('end', resolve_bind);
-		archive.on('finish', resolve_bind);
-		archive.on('error', reject);
-		archive.pipe(stream_write);
-		objArr.forEach( (obj)=>{
-			obj.stat.isFile() ?
-				archive.file(obj.path, {name: path.basename(obj.path)}):
-				archive.directory(obj.path, path.basename(obj.path));
-		});
-		archive.finalize();
+	archive.on('error', (error)=>{
+		throw error;
 	});
+	const promise_archive_onEnd = new Promise( (resolve)=>{
+		archive.on('end', resolve);
+	});
+	const promise_archive_onFinish = new Promise( (resolve)=>{
+		archive.on('finish', resolve);
+	});
+	// .zipへの書き込みStream
+	const stream_write = fs.createWriteStream(outputZipPath);
+	stream_write.on('error', (error)=>{
+		throw error;
+	});
+	const promise_stream_onFinish = new Promise( (resolve)=>{
+		stream_write.on('finish', resolve);
+	});
+	archive.pipe(stream_write);
+	// 圧縮するファイルのパスからstatと名前を取得、zipに書き込み
+	for(let inputPath of inputPathArr){
+		const stat = await fsp.stat(inputPath);
+		const name = path.basename(inputPath);
+		if( stat.isFile() ){
+			archive.file(inputPath, {name});
+		}else{
+			archive.directory(inputPath, name);
+		}
+	}
+	archive.finalize();
+	await Promise.all([
+		promise_archive_onEnd,
+		promise_archive_onFinish,
+		promise_stream_onFinish
+	]);
+	return outputZipPath;
 }
 
 /*
