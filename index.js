@@ -95,21 +95,36 @@ Mod.zip = async function(_inputPathArr, _outputZipPath){
 
 /*
 	引数パスの.zipファイルを展開する
-		promiseを返す
+	引数
+		1: string
+			展開する.zipファイルのパス。
+		2: op, string
+			展開先ディレクトリのパス。
+			なければ現在の作業ディレクトリに展開する。
+	返り値
+		promise
+			展開先ディレクトリのパスを引数に解決する。
 */
-Mod.unzip = function(inputZipPath, outputDirPath='./'){
+Mod.unzip = async function(inputZipPath, outputDirPath='./'){
 	console.log(`${ModName}.unzip()`, `input: ${inputZipPath}`, `output: ${outputDirPath}`);
-	return new Promise( (resolve, reject)=>{
-		const stream_read = fs.createReadStream(inputZipPath);
-		const stream_unzip = unzip2.Extract({
-			path: outputDirPath//path.resolve(outputDirPath)
-		});
-		stream_unzip.on('close', ()=>{
-			resolve(outputDirPath);
-		});
-		stream_unzip.on('error', reject);
-		stream_read.pipe(stream_unzip);
+	const stream_read = fs.createReadStream(inputZipPath);
+	const promise_stream_read_onClose = new Promise( (resolve, reject)=>{
+		stream_read.on('close', resolve);
+		stream_read.on('error', reject);
 	});
+	const stream_unzip = unzip2.Extract({
+		path: outputDirPath
+	});
+	const promise_stream_unzip_onClose = new Promise( (resolve, reject)=>{
+		stream_unzip.on('close', resolve);
+		stream_unzip.on('error', reject);
+	});
+	stream_read.pipe(stream_unzip);
+	await Promise.all([
+		promise_stream_read_onClose,
+		promise_stream_unzip_onClose
+	]);
+	return outputDirPath;
 }
 
 module.exports = Mod;

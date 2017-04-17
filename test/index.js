@@ -7,6 +7,7 @@ console.log(`${name} v${version}: test`);
 // Modules
 const {zip, unzip, debug} = require('../');
 //debug(true);
+//debug(true);
 const {is, not, any} = require('@honeo/check');
 const fs = require('fs');
 const fsp = require('fs-promise');
