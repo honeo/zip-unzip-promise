@@ -8,6 +8,7 @@ const fs = require('fs');
 const fsp = require('fs-promise')
 const path = require('path');
 const unzip2 = require('unzip2');
+const unzipper = require('unzipper');
 const {is, not, any} = require('@honeo/check');
 const console = require('console-wrapper');
 
@@ -54,26 +55,22 @@ Mod.zip = async function(_inputPathArr, _outputZipPath){
 			return path.resolve(`./${name}.zip`);
 		}
 	}());
-	// zipインスタンス
+	// zipインスタンス(readable)
 	const archive = new Archiver('zip', archiver_zip_op);
-	archive.on('error', (error)=>{
-		throw error;
-	});
-	const promise_archive_onEnd = new Promise( (resolve)=>{
+	const promise_archive = new Promise( (resolve, reject)=>{
 		archive.on('end', resolve);
+		archive.on('error', reject);
 	});
 	const promise_archive_onFinish = new Promise( (resolve)=>{
 		archive.on('finish', resolve);
 	});
 	// .zipへの書き込みStream
-	const stream_write = fs.createWriteStream(outputZipPath);
-	stream_write.on('error', (error)=>{
-		throw error;
+	const writable = fs.createWriteStream(outputZipPath);
+	const promise_writable = new Promise( (resolve, reject)=>{
+		writable.on('error', reject);
+		writable.on('finish', resolve);
 	});
-	const promise_stream_onFinish = new Promise( (resolve)=>{
-		stream_write.on('finish', resolve);
-	});
-	archive.pipe(stream_write);
+	archive.pipe(writable);
 	// 圧縮するファイルのパスからstatと名前を取得、zipに書き込み
 	for(let inputPath of inputPathArr){
 		const stat = await fsp.stat(inputPath);
@@ -86,9 +83,9 @@ Mod.zip = async function(_inputPathArr, _outputZipPath){
 	}
 	archive.finalize();
 	await Promise.all([
-		promise_archive_onEnd,
+		promise_archive,
 		promise_archive_onFinish,
-		promise_stream_onFinish
+		promise_writable
 	]);
 	return outputZipPath;
 }
@@ -107,22 +104,22 @@ Mod.zip = async function(_inputPathArr, _outputZipPath){
 */
 Mod.unzip = async function(inputZipPath, outputDirPath='./'){
 	console.log(`${ModName}.unzip()`, `input: ${inputZipPath}`, `output: ${outputDirPath}`);
-	const stream_read = fs.createReadStream(inputZipPath);
-	const promise_stream_read_onClose = new Promise( (resolve, reject)=>{
-		stream_read.on('close', resolve);
-		stream_read.on('error', reject);
+	const readable = fs.createReadStream(inputZipPath);
+	const promise_readable = new Promise( (resolve, reject)=>{
+		readable.on('close', resolve);
+		readable.on('error', reject);
 	});
-	const stream_unzip = unzip2.Extract({
+	const writable = unzip2.Extract({
 		path: outputDirPath
 	});
-	const promise_stream_unzip_onClose = new Promise( (resolve, reject)=>{
-		stream_unzip.on('close', resolve);
-		stream_unzip.on('error', reject);
+	const promise_writable = new Promise( (resolve, reject)=>{
+		writable.on('close', resolve);
+		writable.on('error', reject);
 	});
-	stream_read.pipe(stream_unzip);
+	readable.pipe(writable);
 	await Promise.all([
-		promise_stream_read_onClose,
-		promise_stream_unzip_onClose
+		promise_readable,
+		promise_writable
 	]);
 	return outputDirPath;
 }

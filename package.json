@@ -19,7 +19,7 @@
     "unzip2": "^0.2.5"
   },
   "devDependencies": {
-    "@honeo/test": "^2.1.0",
+    "@honeo/test": "^3.1.0",
     "ospath": "^1.2.2"
   },
   "keywords": [

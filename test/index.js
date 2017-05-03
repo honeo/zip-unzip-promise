@@ -7,7 +7,6 @@ console.log(`${name} v${version}: test`);
 // Modules
 const {zip, unzip, debug} = require('../');
 //debug(true);
-//debug(true);
 const {is, not, any} = require('@honeo/check');
 const fs = require('fs');
 const fsp = require('fs-promise');
@@ -17,7 +16,7 @@ const Test = require('@honeo/test');
 
 // Var
 const option = {
-	cd: path.join(ospath.tmp(), 'temp-zip-nzip-promise'),
+	chtmpdir: true,
 	exit: true,
 	init(){
 		// ./foo/bar/foobar.txt, ./hoge.txt を作成する。
@@ -28,8 +27,7 @@ const option = {
 		}).catch( (error)=>{
 			return Promise.reject( new Error(`init failed: ${error.message}`) );
 		});
-	},
-	prefix: ''
+	}
 }
 
 // Main
