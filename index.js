@@ -4,11 +4,9 @@
 
 // Modules
 const Archiver = require('archiver');
-const fs = require('fs');
-const fsp = require('fs-promise')
+const fse = require('fs-extra')
 const path = require('path');
 const unzip2 = require('unzip2');
-const unzipper = require('unzipper');
 const {is, not, any} = require('@honeo/check');
 const console = require('console-wrapper');
 
@@ -65,7 +63,7 @@ Mod.zip = async function(_inputPathArr, _outputZipPath){
 		archive.on('finish', resolve);
 	});
 	// .zipへの書き込みStream
-	const writable = fs.createWriteStream(outputZipPath);
+	const writable = fse.createWriteStream(outputZipPath);
 	const promise_writable = new Promise( (resolve, reject)=>{
 		writable.on('error', reject);
 		writable.on('finish', resolve);
@@ -73,7 +71,7 @@ Mod.zip = async function(_inputPathArr, _outputZipPath){
 	archive.pipe(writable);
 	// 圧縮するファイルのパスからstatと名前を取得、zipに書き込み
 	for(let inputPath of inputPathArr){
-		const stat = await fsp.stat(inputPath);
+		const stat = await fse.stat(inputPath);
 		const name = path.basename(inputPath);
 		if( stat.isFile() ){
 			archive.file(inputPath, {name});
@@ -104,7 +102,7 @@ Mod.zip = async function(_inputPathArr, _outputZipPath){
 */
 Mod.unzip = async function(inputZipPath, outputDirPath='./'){
 	console.log(`${ModName}.unzip()`, `input: ${inputZipPath}`, `output: ${outputDirPath}`);
-	const readable = fs.createReadStream(inputZipPath);
+	const readable = fse.createReadStream(inputZipPath);
 	const promise_readable = new Promise( (resolve, reject)=>{
 		readable.on('close', resolve);
 		readable.on('error', reject);

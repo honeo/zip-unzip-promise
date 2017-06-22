@@ -13,8 +13,8 @@
  * 自作のコンソール一括ON/OFF.
 * ospath
  * テスト時のテンポラリディレクトリ取得用。
-* promise-fs
- * PromiseAPIなfs-extra.
+* fs-extra
+ * fs拡張。
 * @honeo/test
  * 自作のかんたんテストモジュール。
 * @honeo/check
