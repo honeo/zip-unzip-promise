@@ -112,7 +112,10 @@ Test([
 		const result = await list(zipPath);
 		console.log(result);
 		return is.true(
-			is.arr(result)
+			is.arr(result),
+			result.includes('hoge.txt'),
+			result.includes('foo/bar/'),
+			result.includes('foo/bar/foobar.txt')
 		);
 	}
 

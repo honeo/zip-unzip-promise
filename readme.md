@@ -47,6 +47,6 @@ const dirPath = await unzip('./hoge.zip', './fuga');
 引数1パスの圧縮ファイル内のコンテンツ一覧を配列で取得する。  
 取得した配列を引数に解決するpromiseを返す。
 ```js
-// [...'content-name']
+// [...'file.ext', 'dir/']
 const arr = await list('hoge.zip');
 ```
