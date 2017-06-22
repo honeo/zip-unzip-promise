@@ -5,7 +5,7 @@ const {name, version} = require('../package.json');
 console.log(`${name} v${version}: test`);
 
 // Modules
-const {zip, unzip, debug} = require('../');
+const {zip, unzip, list, debug} = require('../');
 //debug(true);
 const {is, not, any} = require('@honeo/check');
 const fse = require('fs-extra');
@@ -104,4 +104,16 @@ Test([
 			fse.existsSync('./output/hoge.txt')
 		);
 	},
+
+	// list
+	async function(){
+		console.log('list(zipPath)');
+		const zipPath = await zip(['./foo', './hoge.txt']);
+		const result = await list(zipPath);
+		console.log(result);
+		return is.true(
+			is.arr(result)
+		);
+	}
+
 ], option);

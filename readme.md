@@ -7,10 +7,10 @@ ZIP圧縮・展開など。
 
 ## 使い方
 ```sh
-$ npm i -S zip-unzip-promise
+$ npm i zip-unzip-promise
 ```
 ```js
-const {zip, unzip} = require('zip-unzip-promise');
+const {zip, unzip, list} = require('zip-unzip-promise');
 ```
 
 ## API
@@ -41,4 +41,12 @@ const dirPath = await unzip('./hoge.zip');
 
 // hoge.zip => fuga
 const dirPath = await unzip('./hoge.zip', './fuga');
+```
+
+### .list(inputZipPath)
+引数1パスの圧縮ファイル内のコンテンツ一覧を配列で取得する。  
+取得した配列を引数に解決するpromiseを返す。
+```js
+// [...'content-name']
+const arr = await list('hoge.zip');
 ```
