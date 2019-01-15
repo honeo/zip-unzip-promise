@@ -12,11 +12,11 @@
     "test": "test"
   },
   "dependencies": {
-    "@honeo/check": "^1.0.2",
+    "@honeo/check": "^1.1.4",
     "archiver": "^1.3.0",
     "fs-extra": "^3.0.1",
-    "promise-fs": "^1.2.3",
-    "unzip2": "^0.2.5"
+    "node-unzip-2": "^0.2.7",
+    "promise-fs": "^1.3.0"
   },
   "devDependencies": {
     "@honeo/test": "^3.1.1",
