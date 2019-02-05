@@ -17,54 +17,98 @@ const {zip, unzip, list} = require('zip-unzip-promise');
 
 
 ## API
+* 出力先について
+	- ファイルが既にあればスキップする。
+	- ディレクトリがなければ作成する。
+	- [node-sanitize-filename](https://github.com/parshap/node-sanitize-filename)で正規化する。
 
-* 出力先に指定したファイル・ディレクトリの親ディレクトリがなければ作成する。
-* options.overwriteがtrueなら出力ファイルによる上書きを許可する。
+### options
+| key       | type     | default | description                                                            |
+|:--------- |:-------- | ------- | ---------------------------------------------------------------------- |
+| encode    | string   | "utf8"  | 書庫のファイル・ディレクトリ名に使われている文字コード。                                               |
+| filter    | function |         | 出力するコンテンツ毎にobjectを引数に実行され、falseが返ればskipする。 |
+| overwrite | boolean  | false   | 上書きを許可するか。                                                   |
+
 
 ### .zip(input, outputFilePath [, options])
 引数1パスのファイル・ディレクトリまたはそれらの配列を元に圧縮する。  
-作成した圧縮ファイルのパス文字列を引数に解決するpromiseを返す。
+作成した圧縮ファイルの絶対パスを引数に解決するpromiseを返す。
 ```js
-// hoge.txt => hoge.zip
-const str_outputFilePath = await zip('hoge.txt', 'hoge.zip');
+// file => archive
+const zipPath = await zip('hoge.txt', 'hoge.zip');
 
-// hoge => output/hoge.zip
-const str_outputFilePath = await zip('hoge', 'output/hoge.zip');
+// dir => dir/archive
+const zipPath = await zip('hoge', 'output/hoge.zip');
 
-// hoge, fuga.ext => piyo.zip
-const str_outputFilePath = await zip([
-	'./hoge',
-	'./fuga.ext',
+// dir & file => archive
+const zipPath = await zip([
+	'./hoge', './fuga.ext'
 ], './piyo.zip');
 
-// options
-const str_outputFilePath = await zip('foo.ext', 'bar.zip', {
+
+
+/*
+	options
+*/
+
+// overwrite: all
+const zipPath = await zip('foo.ext', 'bar.zip', {
 	overwrite: true
+});
+
+// overwrite: if old
+const zipPath = await zip('foo.ext', 'bar.zip', {
+	overwrite: true,
+	filter({path, type}){
+		const stats = fs.statSync(path);
+		return stats.birthtime.getFullYear() < new Date().getFullYear();
+	}
 });
 ```
 
 
 ### .unzip(inputFilePath, outputDirPath [, options])
 引数1パスの圧縮ファイルを展開する。  
-展開先ディレクトリのパスを引数に解決するpromiseを返す。
+展開先ディレクトリの絶対パスを引数に解決するpromiseを返す。
 ```js
-// hoge.zip => ...
-const str_outputDirPath = await unzip('./hoge.zip', './');
+// archive => contents
+const dirPath = await unzip('./hoge.zip', './');
 
-// hoge.zip => output/...
-const str_outputDirPath = await unzip('./hoge.zip', './output');
+// archive => dir/contents
+const dirPath = await unzip('./hoge.zip', './output');
 
-// options
-const str_outputDirPath = await unzip('foo.zip', 'bar', {
+
+
+/*
+	options
+*/
+
+// overwrite
+const dirPath = await unzip('foo.zip', 'bar', {
 	overwrite: true
+});
+
+// output: *.txt file only
+const dirPath = await unzip('foo.zip', 'bar', {
+	filter({path, type}){
+		return type==='File' && /\.txt$/.test(path);
+	}
+});
+
+// for not UTF-8
+const dirPath = await unzip('archive.zip', './', {
+	encode: 'Shift_JIS'
 });
 ```
 
 
-### .list(inputFilePath)
+### .list(inputFilePath, [, options])
 引数1パスの圧縮ファイル内のコンテンツ一覧を配列で取得する。  
 取得した配列を引数に解決するpromiseを返す。
 ```js
-// [...'file.ext', 'dir/']
+// [...pathString]
 const arr = await list('hoge.zip');
+
+// options
+const arr = await list('hoge.zip', {encode: 'sjis'});
 ```

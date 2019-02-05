@@ -2,26 +2,47 @@
 いわゆる製作メモ。
 
 
-
 ## TODO
+* イベント捕捉部分をawait-eventに。
+
+
+## メモ
+
+### 上書き確認について
+手動でやっている。
+fs.createWriteStream(, {flag})に任せると環境によっては機能しないため。
+
+### 出力パスの正規化
+unzip()にだけ実装したが、内部ディレクトリ部分がノーチェックだからあまり意味はない気がする。
+
+
+## 構成
+* test
+    - index.js
+        - テスト実行用。
+    - contents
+        - テスト素材入れ。
+        - CP932.zipはファイル・ディレクトリ名と中身が全てエンコードCP932。
 
 
 ## Modules
 
 ### dependencies
 * archiver
- * 圧縮。
-* node-unzip-2
- * 展開。
+    * 圧縮。
 * console-wrapper
- * 自作のコンソール一括ON/OFF.
+    - 表示一括ON/OFF。
+* sanitize-filename
+    - 出力先パスの正規化。
 * fs-extra
- * fs拡張。
+    * fs拡張。
+* iconv-lite
+    * 出力パスの文字コード変換。
+* unzipper
+    * 展開。
 * @honeo/check
- * 自作の型チェック等モジュール。
+    * チェック等。
 
 ### devDependencies
 * @honeo/test
- * 自作のかんたんテストモジュール。
-* ospath
- * テスト時のテンポラリディレクトリ取得用。
+    * テスト。
