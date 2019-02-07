@@ -1,5 +1,5 @@
 # zip-unzip-promise
-* [honeo/zip-unzip-promise](https://github.com/honeo/zip-unzip-promise)  
+* [honeo/zip-unzip-promise](https://github.com/honeo/zip-unzip-promise)
 * [zip-unzip-promise](https://www.npmjs.com/package/zip-unzip-promise)
 
 
@@ -25,13 +25,13 @@ const {zip, unzip, list} = require('zip-unzip-promise');
 ### options
 | key       | type     | default | description                                                            |
 |:--------- |:-------- | ------- | ---------------------------------------------------------------------- |
-| encode    | string   | "utf8"  | 書庫のファイル・ディレクトリ名に使われている文字コード。                                               |
+| encode    | string   | "utf8"  | 書庫のファイル・ディレクトリ名に使われている[文字コード名](https://github.com/ashtuchkin/iconv-lite/wiki/Supported-Encodings)。       |
 | filter    | function |         | 出力するコンテンツ毎にobjectを引数に実行され、falseが返ればskipする。 |
 | overwrite | boolean  | false   | 上書きを許可するか。                                                   |
 
 
 ### .zip(input, outputFilePath [, options])
-引数1パスのファイル・ディレクトリまたはそれらの配列を元に圧縮する。  
+引数1パスのファイル・ディレクトリまたはそれらの配列を元に圧縮する。
 作成した圧縮ファイルの絶対パスを引数に解決するpromiseを返す。
 ```js
 // file => archive
@@ -68,7 +68,7 @@ const zipPath = await zip('foo.ext', 'bar.zip', {
 
 
 ### .unzip(inputFilePath, outputDirPath [, options])
-引数1パスの圧縮ファイルを展開する。  
+引数1パスの圧縮ファイルを展開する。
 展開先ディレクトリの絶対パスを引数に解決するpromiseを返す。
 ```js
 // archive => contents
@@ -103,7 +103,7 @@ const dirPath = await unzip('archive.zip', './', {
 
 
 ### .list(inputFilePath, [, options])
-引数1パスの圧縮ファイル内のコンテンツ一覧を配列で取得する。  
+引数1パスの圧縮ファイル内のコンテンツ一覧を配列で取得する。
 取得した配列を引数に解決するpromiseを返す。
 ```js
 // [...pathString]
