@@ -12,16 +12,16 @@
     "test": "test"
   },
   "dependencies": {
-    "@honeo/check": "^1.2.0",
+    "@honeo/check": "^1.6.1",
     "archiver": "^3.0.0",
     "console-wrapper": "^1.1.0",
     "fs-extra": "^7.0.1",
     "iconv-lite": "^0.4.24",
     "sanitize-filename": "^1.6.1",
-    "unzipper": "^0.9.10"
+    "unzipper": "^0.9.11"
   },
   "devDependencies": {
-    "@honeo/test": "^3.2.0"
+    "@honeo/test": "^3.3.0"
   },
   "keywords": [
     "zip",

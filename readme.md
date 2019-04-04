@@ -112,3 +112,13 @@ const arr = await list('hoge.zip');
 // options
 const arr = await list('hoge.zip', {encode: 'sjis'});
 ```
+
+
+
+## Breaking Changes
+
+### v1 => v2
+* .zip()
+	- 引数2が必須化。
+* .unzip()
+	- 引数2が必須化。

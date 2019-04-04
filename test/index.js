@@ -113,6 +113,7 @@ Test([
 
 	async function(){
 		console.log('zip(inputFile, outputDuplicateFile, {filter}) no output');
+
 		let isExeced = false;
 		const str_filePath = await zip('hoge.txt', 'archive.zip', {
 			filter({path, type}){
@@ -120,6 +121,7 @@ Test([
 				return false;
 			}
 		});
+
 		return is.true(
 			isExeced,
 			str_filePath==='',
