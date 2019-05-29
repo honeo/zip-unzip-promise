@@ -32,12 +32,15 @@ unzip()にだけ実装したが、内部ディレクトリ部分がノーチェ�
     * 圧縮。
 * console-wrapper
     - 表示一括ON/OFF。
+* iconv-lite
+    - 文字コード変換。
+* jschardet
+    - 文字コード判定。
+    - encoding-japaneseより範囲が広いから採用。
 * sanitize-filename
     - 出力先パスの正規化。
 * fs-extra
     * fs拡張。
-* iconv-lite
-    * 出力パスの文字コード変換。
 * unzipper
     * 展開。
 * @honeo/check

@@ -12,13 +12,14 @@
     "test": "test"
   },
   "dependencies": {
-    "@honeo/check": "^1.6.1",
+    "@honeo/check": "^1.8.0",
     "archiver": "^3.0.0",
     "console-wrapper": "^1.1.0",
     "fs-extra": "^7.0.1",
     "iconv-lite": "^0.4.24",
+    "jschardet": "^2.1.0",
     "sanitize-filename": "^1.6.1",
-    "unzipper": "^0.9.11"
+    "unzipper": "^0.9.15"
   },
   "devDependencies": {
     "@honeo/test": "^3.3.0"

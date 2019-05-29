@@ -25,7 +25,7 @@ const {zip, unzip, list} = require('zip-unzip-promise');
 ### options
 | key       | type     | default | description                                                            |
 |:--------- |:-------- | ------- | ---------------------------------------------------------------------- |
-| encode    | string   | "utf8"  | 書庫のファイル・ディレクトリ名に使われている[文字コード名](https://github.com/ashtuchkin/iconv-lite/wiki/Supported-Encodings)。       |
+| encode    | string   | "utf8"  | 書庫内のパスに使われている文字コード。"auto"で自動検出。 [文字コード名](https://github.com/ashtuchkin/iconv-lite/wiki/Supported-Encodings)       |
 | filter    | function |         | 出力するコンテンツ毎にobjectを引数に実行され、falseが返ればskipする。 |
 | overwrite | boolean  | false   | 上書きを許可するか。                                                   |
 
@@ -97,7 +97,7 @@ const dirPath = await unzip('foo.zip', 'bar', {
 
 // for not UTF-8
 const dirPath = await unzip('archive.zip', './', {
-	encode: 'Shift_JIS'
+	encode: 'auto' // or "sjis", "ascii"...
 });
 ```
 

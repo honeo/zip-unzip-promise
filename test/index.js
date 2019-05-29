@@ -260,10 +260,23 @@ Test([
 	},
 
 	async function(){
-		console.log('list(zipPath, {encode})');
+		console.log('list(zipPath, {encode: "CP932"})');
 		const arr1 = await list('CP932.zip');
 		const arr2 = await list('CP932.zip', {
 			encode: 'CP932'
+		});
+		return is.true(
+			is.str(arr1[0], arr2[0]),
+			arr1[0]!==arr2[0],
+			arr2[0]===path.normalize('ディレクトリ/テキストファイル.txt')
+		);
+	},
+
+	async function(){
+		console.log('list(zipPath, {encode: "auto"})');
+		const arr1 = await list('CP932.zip');
+		const arr2 = await list('CP932.zip', {
+			encode: 'auto'
 		});
 		return is.true(
 			is.str(arr1[0], arr2[0]),
